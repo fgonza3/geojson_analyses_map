@@ -2,12 +2,12 @@
 <html lang="en-US">
  <head>
     <meta charset="utf-8">
-    <title>Earthquake List</title>
+    <title>Washington Licensed Dairy Farms</title>
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
     <link href="https://api.mapbox.com/mapbox-gl-js/v2.5.0/mapbox-gl.css" rel="stylesheet">
     <script src="https://api.mapbox.com/mapbox-gl-js/v2.5.0/mapbox-gl.js"></script>
     <style>
-        body {
+  body {
     margin: 0;
     padding: 0;
 }
@@ -17,32 +17,43 @@
     height: 100vh;
     flex-direction: row;
     align-items: stretch;
+    position: relative; /* Set position to enable z-index */
 }
+
 #side-panel {
     flex-basis: 500px;
     overflow-y: scroll;
+    position: absolute; /* Set position to absolute */
+    z-index: 1;
+    background-color: rgba(255, 255, 255, 0.8); /* Set background color to semi-transparent white */
+    right: 0; /* Align the side panel to the right */
 }
-@media(max-width:1024px){
-    #side-panel{
-        display:none;
+
+@media(max-width:1024px) {
+    #side-panel {
+        display: none;
     }
 }
 
 #map {
     flex-grow: 1;
+    position: relative;
+    z-index: 0;
 }
+
 button {
     margin-bottom: 10px;
 }
+
 table {
     border-collapse: collapse;
     border-spacing: 0;
     width: 100%;
     border: 1px solid #ddd;
+    background-color: rgba(255, 255, 255, 0.8); /* Set background color to semi-transparent white */
 }
 
-th,
-td {
+th, td {
     text-align: left;
     padding: 16px;
 }
@@ -57,14 +68,14 @@ tr:nth-child(even) {
         <div id="map"></div>
         <div id="side-panel">
  
-            <h2>Earthquake List</h2>
-            <button>Sort by Magnitude</button>
+            <h2> Washington Dairy Farm List:</h2>
+            <button>Sort by Site City</button>
  
             <table>
                 <tr>
-                    <th>id</th>
-                    <th>magnitude</th>
-                    <th>timestamp</th>
+                    <th>Range Current Milking</th>
+                    <th>Facility Size</th>
+                    <th>Site City</th>
                 </tr>
             </table>
  
@@ -76,28 +87,28 @@ tr:nth-child(even) {
     container: 'map', // container ID
     style: 'mapbox://styles/mapbox/outdoors-v12', // style URL
     zoom: 6, // starting zoom
-    center: [-121, 47] // starting center
+    center: [-117, 47] // starting center
 });
 
 async function geojsonFetch() {
-    let response, earthquakes, japan, table;
-    response = await fetch('assets/earthquakes.geojson');
-    earthquakes = await response.json();
-    response = await fetch('assets/japan.json');
-    japan = await response.json();
+    let response, Milk_Dairy_Farms, WA_County_Boundaries, table;
+    response = await fetch('wash_data/Milk_Dairy_Farms.geojson');
+    Milk_Dairy_Farms = await response.json();
+    response = await fetch('wash_data/WA_County_Boundaries.geojson');
+    WA_County_Boundaries = await response.json();
 
     //load data to the map as new layers and table on the side.
 map.on('load', function loadingData() {
 
-map.addSource('earthquakes', {
+map.addSource('Milk_Dairy_Farms', {
     type: 'geojson',
-    data: earthquakes
+    data: Milk_Dairy_Farms
 });
 
 map.addLayer({
-    'id': 'earthquakes-layer',
+    'id': 'Milk_Dairy_Farms-layer',
     'type': 'circle',
-    'source': 'earthquakes',
+    'source': 'Milk_Dairy_Farms',
     'paint': {
         'circle-radius': 8,
         'circle-stroke-width': 2,
@@ -107,15 +118,15 @@ map.addLayer({
 });
 
 
-map.addSource('japan', {
+map.addSource('WA_County_Boundaries', {
     type: 'geojson',
-    data: japan
+    data: WA_County_Boundaries
 });
 
 map.addLayer({
-    'id': 'japan-layer',
+    'id': 'WA_County_Boundaries-layer',
     'type': 'fill',
-    'source': 'japan',
+    'source': 'WA_County_Boundaries',
     'paint': {
         'fill-color': '#0080ff', // blue color fill
         'fill-opacity': 0.5
@@ -126,16 +137,15 @@ map.addLayer({
 
 table = document.getElementsByTagName("table")[0];
 let row, cell1, cell2, cell3;
-for (let i = 0; i < earthquakes.features.length; i++) {
+for (let i = 0; i < Milk_Dairy_Farms.features.length; i++) {
     // Create an empty <tr> element and add it to the 1st position of the table:
     row = table.insertRow(-1);
     cell1 = row.insertCell(0);
     cell2 = row.insertCell(1);
     cell3 = row.insertCell(2);
-    cell1.innerHTML = earthquakes.features[i].properties.id;
-    cell2.innerHTML = earthquakes.features[i].properties.mag;
-    cell3.innerHTML = new Date(earthquakes.features[i].properties.time).toLocaleDateString(
-        "en-US");
+    cell1.innerHTML = Milk_Dairy_Farms.features[i].properties.R_Current_Milking;
+    cell2.innerHTML = Milk_Dairy_Farms.features[i].properties.Facility_Size;
+    cell3.innerHTML = Milk_Dairy_Farms.features[i].properties.S_City;
 }
 
 let btn = document.getElementsByTagName("button")[0];
@@ -160,8 +170,8 @@ function sortTable(e) {
             shouldSwitch = false;
             /*Get the two elements you want to compare,
             one from current row and one from the next:*/
-            x = parseFloat(rows[i].getElementsByTagName("td")[1].innerHTML);
-            y = parseFloat(rows[i + 1].getElementsByTagName("td")[1].innerHTML);
+            x = parseFloat(rows[i].getElementsByTagName("td")[2].innerHTML);
+            y = parseFloat(rows[i + 1].getElementsByTagName("td")[2].innerHTML);
             //check if the two rows should switch place:
             if (x < y) {
                 //if so, mark as a switch and break the loop:
