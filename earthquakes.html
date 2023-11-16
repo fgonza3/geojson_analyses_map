@@ -22,11 +22,6 @@
     flex-basis: 500px;
     overflow-y: scroll;
 }
-@media(max-width:1024px){
-    #side-panel{
-        display:none;
-    }
-}
 
 #map {
     flex-grow: 1;
@@ -54,7 +49,6 @@ tr:nth-child(even) {
  </head>
  <body>
     <main id="container">
-        <div id="map"></div>
         <div id="side-panel">
  
             <h2>Earthquake List</h2>
@@ -69,14 +63,15 @@ tr:nth-child(even) {
             </table>
  
         </div>
+        <div id="map"></div>
     </main>
     <script>
     mapboxgl.accessToken = 'pk.eyJ1IjoiZmdvbnphMiIsImEiOiJjbG93aDJ1cHkwNW42MmludThvb3ZqNWRhIn0.1OWn4R0rNtBP0oHl0wZgdw';
     let map = new mapboxgl.Map({
     container: 'map', // container ID
-    style: 'mapbox://styles/mapbox/outdoors-v12', // style URL
-    zoom: 6, // starting zoom
-    center: [-121, 47] // starting center
+    style: 'mapbox://styles/mapbox/satellite-v9', // style URL
+    zoom: 5.5, // starting zoom
+    center: [138, 38] // starting center
 });
 
 async function geojsonFetch() {
@@ -183,4 +178,4 @@ geojsonFetch();
 
     </script>
  </body>   
-<html>
+<html>   
